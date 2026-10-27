@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظم الوقت اليومي - TaskFlow</title>
+    <title>uni-time - منظم الوقت اليومي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
             --primary-hover: #4f46e5;
-            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --card-bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.85);
             --text-main: #1e293b;
             --text-secondary: #64748b;
             --border: #e2e8f0;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            --radius: 16px;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --radius: 20px;
         }
 
         .dark-mode {
             --primary: #818cf8;
             --primary-hover: #6366f1;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.85);
             --text-main: #f8fafc;
             --text-secondary: #94a3b8;
             --border: #334155;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
         }
 
         * {
@@ -37,94 +35,133 @@
             margin: 0;
             padding: 0;
             font-family: 'Cairo', sans-serif;
-            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
         }
 
         body {
-            background: var(--bg-gradient);
+            background-color: #0f172a;
             color: var(--text-main);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Grid Background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(99, 102, 241, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        .dark-mode .grid-background {
+            background-image: 
+                linear-gradient(to right, rgba(129, 140, 248, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(129, 140, 248, 0.05) 1px, transparent 1px);
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px 30px; }
         }
 
         .app-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 950px;
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Header */
         header {
-            padding: 24px 30px;
+            padding: 20px 25px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header-title h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: var(--primary);
-        }
-
-        .header-title p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .header-actions {
             display: flex;
-            gap: 12px;
             align-items: center;
+            gap: 8px;
+        }
+
+        .header-title .studio-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
         }
 
         .icon-btn {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-main);
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .icon-btn:hover {
             background: var(--border);
+            transform: scale(1.05);
         }
 
         /* Main Content Layout */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 340px;
             gap: 0;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .main-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .content-section {
-            padding: 30px;
+            padding: 25px;
             border-left: 1px solid var(--border);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .content-section {
                 border-left: none;
                 border-bottom: 1px solid var(--border);
@@ -133,17 +170,17 @@
 
         /* Progress Bar */
         .progress-box {
-            background: var(--bg-gradient);
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            background: rgba(99, 102, 241, 0.05);
+            padding: 15px 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
             border: 1px solid var(--border);
         }
 
         .progress-info {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 8px;
         }
@@ -160,28 +197,30 @@
             height: 100%;
             background: var(--success);
             width: 0%;
-            transition: width 0.4s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Task Input */
         .task-input-group {
             display: flex;
             gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .task-input-group input, .task-input-group select {
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--card-bg);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .task-input-group input {
             flex: 1;
+            min-width: 150px;
+        }
+
+        .task-input-group input, .task-input-group select {
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
         }
 
         .task-input-group select {
@@ -193,23 +232,26 @@
             color: #fff;
             border: none;
             padding: 0 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
+            min-height: 45px;
         }
 
         .btn-primary:hover {
             background: var(--primary-hover);
+            transform: translateY(-2px);
         }
 
         /* Tasks List */
         .tasks-container {
-            max-height: 350px;
+            max-height: 320px;
             overflow-y: auto;
-            padding-left: 5px;
+            padding-left: 4px;
         }
 
         .task-item {
@@ -218,10 +260,15 @@
             justify-content: space-between;
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 12px 16px;
+            padding: 12px 15px;
             border-radius: 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 10px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .task-item.completed span {
@@ -234,6 +281,7 @@
             align-items: center;
             gap: 12px;
             flex: 1;
+            word-break: break-word;
         }
 
         .task-checkbox {
@@ -241,13 +289,15 @@
             height: 20px;
             cursor: pointer;
             accent-color: var(--primary);
+            flex-shrink: 0;
         }
 
         .badge {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             padding: 3px 8px;
             border-radius: 20px;
             font-weight: 600;
+            flex-shrink: 0;
         }
 
         .badge-high { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
@@ -261,51 +311,58 @@
             cursor: pointer;
             font-size: 1rem;
             padding: 4px;
+            flex-shrink: 0;
         }
 
         .delete-btn:hover {
             color: var(--danger);
+            transform: scale(1.1);
         }
 
         /* Sidebar / Pomodoro & Notes */
         .sidebar {
-            padding: 30px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            gap: 25px;
-            background: rgba(0,0,0,0.01);
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.01);
         }
 
         .pomodoro-card {
             text-align: center;
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 20px;
+            padding: 18px;
             border-radius: 14px;
         }
 
         .pomodoro-time {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: var(--primary);
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .pomodoro-btns {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .btn-sm {
-            padding: 6px 14px;
-            font-size: 0.85rem;
+            padding: 6px 12px;
+            font-size: 0.8rem;
             border-radius: 8px;
             border: 1px solid var(--border);
             background: var(--card-bg);
             color: var(--text-main);
             cursor: pointer;
             font-weight: 600;
+        }
+
+        .btn-sm:hover {
+            border-color: var(--primary);
         }
 
         .btn-sm.active {
@@ -322,7 +379,7 @@
         }
 
         .notes-card h3 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 8px;
             color: var(--text-main);
         }
@@ -330,33 +387,37 @@
         .notes-card textarea {
             width: 100%;
             flex: 1;
-            min-height: 120px;
+            min-height: 100px;
             resize: none;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid var(--border);
             background: var(--card-bg);
             color: var(--text-main);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
         }
 
         .empty-state {
             text-align: center;
             color: var(--text-secondary);
-            padding: 30px;
-            font-size: 0.95rem;
+            padding: 25px;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
+    <div class="grid-background"></div>
+
     <div class="app-container">
         <!-- Header -->
         <header>
             <div class="header-title">
-                <h1>TaskFlow 🚀</h1>
-                <p>نظم وقتك، أنجز مهامك، وحقق أهدافك بسهولة</p>
+                <div>
+                    <h1>uni-time ⏱️</h1>
+                    <div class="studio-name">dx-programer-studio</div>
+                </div>
             </div>
             <div class="header-actions">
                 <button class="icon-btn" id="themeToggle" title="تبديل الوضع الليلي">🌙</button>
@@ -388,17 +449,17 @@
                 </div>
 
                 <div class="tasks-container" id="tasksList">
-                    <!-- Tasks will be injected here -->
+                    <!-- Tasks injected here -->
                 </div>
             </div>
 
-            <!-- Sidebar Section (Pomodoro & Quick Notes) -->
+            <!-- Sidebar Section -->
             <div class="sidebar">
                 <!-- Pomodoro Timer -->
                 <div class="pomodoro-card">
-                    <h3 id="timerLabel">وقت العمل 🍅</h3>
+                    <h3 id="timerLabel" style="font-size: 0.95rem;">وقت العمل 🍅</h3>
                     <div class="pomodoro-time" id="timerDisplay">25:00</div>
-                    <div class="pomodoro-btns" style="margin-bottom: 12px;">
+                    <div class="pomodoro-btns" style="margin-bottom: 10px;">
                         <button class="btn-sm active" onclick="setTimer(25, 'وقت العمل 🍅', this)">عمل (25د)</button>
                         <button class="btn-sm" onclick="setTimer(5, 'استراحة قصيرة ☕', this)">استراحة (5د)</button>
                     </div>
@@ -418,11 +479,9 @@
     </div>
 
     <script>
-        // --- State Management & LocalStorage ---
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        let quickNotesText = localStorage.getItem('quickNotes') || '';
+        let tasks = JSON.parse(localStorage.getItem('unitime_tasks')) || [];
+        let quickNotesText = localStorage.getItem('unitime_notes') || '';
 
-        // DOM Elements
         const taskInput = document.getElementById('taskInput');
         const taskPriority = document.getElementById('taskPriority');
         const addTaskBtn = document.getElementById('addTaskBtn');
@@ -432,8 +491,8 @@
         const quickNotes = document.getElementById('quickNotes');
         const themeToggle = document.getElementById('themeToggle');
 
-        // --- Theme Toggle ---
-        if (localStorage.getItem('theme') === 'dark') {
+        // Theme Setup
+        if (localStorage.getItem('unitime_theme') === 'dark' || !localStorage.getItem('unitime_theme')) {
             document.body.classList.add('dark-mode');
             themeToggle.textContent = '☀️';
         }
@@ -442,14 +501,14 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             themeToggle.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('unitime_theme', isDark ? 'dark' : 'light');
         });
 
-        // --- Tasks Logic ---
+        // Tasks Logic
         function renderTasks() {
             tasksList.innerHTML = '';
             if (tasks.length === 0) {
-                tasksList.innerHTML = `<div class="empty-state">لا توجد مهام حالياً. أضف مهمة وابدأ إنجازك! ✨</div>`;
+                tasksList.innerHTML = `<div class="empty-state">لا توجد مهام حالياً. ابدأ بإضافة مهامك اليومية ✨</div>`;
                 updateProgress();
                 return;
             }
@@ -468,7 +527,7 @@
                         <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
                         <span>${escapeHtml(task.text)}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="badge ${badgeClass}">${badgeText}</span>
                         <button class="delete-btn" onclick="deleteTask(${index})">🗑️</button>
                     </div>
@@ -514,7 +573,7 @@
         }
 
         function saveTasks() {
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('unitime_tasks', JSON.stringify(tasks));
         }
 
         addTaskBtn.addEventListener('click', addTask);
@@ -522,13 +581,13 @@
             if (e.key === 'Enter') addTask();
         });
 
-        // --- Quick Notes Logic ---
+        // Quick Notes Logic
         quickNotes.value = quickNotesText;
         quickNotes.addEventListener('input', () => {
-            localStorage.setItem('quickNotes', quickNotes.value);
+            localStorage.setItem('unitime_notes', quickNotes.value);
         });
 
-        // --- Pomodoro Timer Logic ---
+        // Pomodoro Timer Logic
         let timerMinutes = 25;
         let timerSeconds = 0;
         let timerInterval = null;
@@ -609,7 +668,6 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
-        // Initial Render
         renderTasks();
         updateTimerDisplay();
     </script>
