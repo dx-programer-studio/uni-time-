@@ -9,27 +9,29 @@
         :root {
             --primary: #6366f1;
             --primary-hover: #4f46e5;
-            --bg-color: #f1f5f9;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --text-main: #1e293b;
-            --text-secondary: #64748b;
-            --border: #cbd5e1;
+            --bg-color: #e2e8f0;
+            --card-bg: rgba(255, 255, 255, 0.45);
+            --inner-card-bg: rgba(255, 255, 255, 0.55);
+            --text-main: #0f172a;
+            --text-secondary: #475569;
+            --border: rgba(203, 213, 225, 0.6);
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.07);
             --radius: 20px;
         }
 
         .dark-mode {
             --primary: #818cf8;
             --primary-hover: #6366f1;
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.85);
+            --bg-color: #0b1120;
+            --card-bg: rgba(15, 23, 42, 0.55);
+            --inner-card-bg: rgba(30, 41, 59, 0.6);
             --text-main: #f8fafc;
             --text-secondary: #94a3b8;
-            --border: #334155;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            --border: rgba(51, 65, 85, 0.6);
+            --shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -67,8 +69,8 @@
             width: 100%;
             max-width: 950px;
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
@@ -92,6 +94,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            background: var(--inner-card-bg);
         }
 
         .header-title h1 {
@@ -106,13 +109,13 @@
         .header-title .studio-name {
             font-size: 0.75rem;
             color: var(--text-secondary);
-            font-weight: 400;
+            font-weight: 600;
             margin-top: 2px;
             letter-spacing: 0.5px;
         }
 
         .icon-btn {
-            background: transparent;
+            background: var(--inner-card-bg);
             border: 1px solid var(--border);
             color: var(--text-main);
             width: 38px;
@@ -157,7 +160,9 @@
 
         /* Progress Bar */
         .progress-box {
-            background: rgba(99, 102, 241, 0.05);
+            background: var(--inner-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 15px 18px;
             border-radius: 14px;
             margin-bottom: 20px;
@@ -168,7 +173,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
@@ -204,9 +209,12 @@
             padding: 12px 15px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            background: var(--card-bg);
+            background: var(--inner-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: var(--text-main);
             font-size: 0.9rem;
+            font-weight: 600;
             outline: none;
         }
 
@@ -245,7 +253,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--card-bg);
+            background: var(--inner-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--border);
             padding: 12px 15px;
             border-radius: 12px;
@@ -269,6 +279,7 @@
             gap: 12px;
             flex: 1;
             word-break: break-word;
+            font-weight: 600;
         }
 
         .task-checkbox {
@@ -283,13 +294,13 @@
             font-size: 0.7rem;
             padding: 3px 8px;
             border-radius: 20px;
-            font-weight: 600;
+            font-weight: 700;
             flex-shrink: 0;
         }
 
-        .badge-high { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-        .badge-medium { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        .badge-low { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-low { background: rgba(16, 185, 129, 0.2); color: var(--success); }
 
         .delete-btn {
             background: none;
@@ -312,12 +323,14 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            background: rgba(0, 0, 0, 0.01);
+            background: rgba(0, 0, 0, 0.02);
         }
 
         .pomodoro-card {
             text-align: center;
-            background: var(--card-bg);
+            background: var(--inner-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--border);
             padding: 18px;
             border-radius: 14px;
@@ -342,7 +355,7 @@
             font-size: 0.8rem;
             border-radius: 8px;
             border: 1px solid var(--border);
-            background: var(--card-bg);
+            background: var(--inner-card-bg);
             color: var(--text-main);
             cursor: pointer;
             font-weight: 600;
@@ -379,9 +392,12 @@
             padding: 12px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            background: var(--card-bg);
+            background: var(--inner-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: var(--text-main);
             font-size: 0.85rem;
+            font-weight: 600;
             outline: none;
         }
 
@@ -390,6 +406,7 @@
             color: var(--text-secondary);
             padding: 25px;
             font-size: 0.9rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -482,9 +499,9 @@
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.8;
-                this.vy = (Math.random() - 0.5) * 0.8;
-                this.size = Math.random() * 2 + 1;
+                this.vx = (Math.random() - 0.5) * 1.2;
+                this.vy = (Math.random() - 0.5) * 1.2;
+                this.size = Math.random() * 2.5 + 1;
             }
             update() {
                 this.x += this.vx;
@@ -493,7 +510,7 @@
                 if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
             }
             draw() {
-                ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(129, 140, 248, 0.5)' : 'rgba(99, 102, 241, 0.4)';
+                ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(129, 140, 248, 0.8)' : 'rgba(99, 102, 241, 0.7)';
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -502,7 +519,7 @@
 
         function initParticles() {
             particlesArray = [];
-            let count = Math.floor((canvas.width * canvas.height) / 15000);
+            let count = Math.floor((canvas.width * canvas.height) / 12000);
             for (let i = 0; i < count; i++) {
                 particlesArray.push(new Particle());
             }
@@ -520,11 +537,11 @@
                     let dy = particlesArray[i].y - particlesArray[j].y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance < 100) {
+                    if (distance < 110) {
                         ctx.strokeStyle = document.body.classList.contains('dark-mode') 
-                            ? `rgba(129, 140, 248, ${1 - distance / 100})` 
-                            : `rgba(99, 102, 241, ${0.8 - distance / 100})`;
-                        ctx.lineWidth = 0.6;
+                            ? `rgba(129, 140, 248, ${1 - distance / 110})` 
+                            : `rgba(99, 102, 241, ${0.9 - distance / 110})`;
+                        ctx.lineWidth = 0.8;
                         ctx.beginPath();
                         ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
                         ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
