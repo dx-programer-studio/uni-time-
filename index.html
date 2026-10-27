@@ -9,20 +9,22 @@
         :root {
             --primary: #6366f1;
             --primary-hover: #4f46e5;
+            --bg-color: #f1f5f9;
             --card-bg: rgba(255, 255, 255, 0.85);
             --text-main: #1e293b;
             --text-secondary: #64748b;
-            --border: #e2e8f0;
+            --border: #cbd5e1;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
             --radius: 20px;
         }
 
         .dark-mode {
             --primary: #818cf8;
             --primary-hover: #6366f1;
+            --bg-color: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.85);
             --text-main: #f8fafc;
             --text-secondary: #94a3b8;
@@ -39,7 +41,7 @@
         }
 
         body {
-            background-color: #0f172a;
+            background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
             padding: 15px;
@@ -50,30 +52,15 @@
             overflow-x: hidden;
         }
 
-        /* Animated Grid Background */
-        .grid-background {
+        /* Canvas Background for Connected Dots */
+        #dotCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(to right, rgba(99, 102, 241, 0.08) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: gridMove 20s linear infinite;
             z-index: -1;
-        }
-
-        .dark-mode .grid-background {
-            background-image: 
-                linear-gradient(to right, rgba(129, 140, 248, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(129, 140, 248, 0.05) 1px, transparent 1px);
-        }
-
-        @keyframes gridMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 30px 30px; }
+            pointer-events: none;
         }
 
         .app-container {
@@ -408,7 +395,7 @@
 </head>
 <body>
 
-    <div class="grid-background"></div>
+    <canvas id="dotCanvas"></canvas>
 
     <div class="app-container">
         <!-- Header -->
@@ -479,6 +466,77 @@
     </div>
 
     <script>
+        // --- Animated Connected Dots Background ---
+        const canvas = document.getElementById('dotCanvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+                if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+            }
+            draw() {
+                ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(129, 140, 248, 0.5)' : 'rgba(99, 102, 241, 0.4)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let count = Math.floor((canvas.width * canvas.height) / 15000);
+            for (let i = 0; i < count; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+
+                for (let j = i; j < particlesArray.length; j++) {
+                    let dx = particlesArray[i].x - particlesArray[j].x;
+                    let dy = particlesArray[i].y - particlesArray[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 100) {
+                        ctx.strokeStyle = document.body.classList.contains('dark-mode') 
+                            ? `rgba(129, 140, 248, ${1 - distance / 100})` 
+                            : `rgba(99, 102, 241, ${0.8 - distance / 100})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // --- App Logic ---
         let tasks = JSON.parse(localStorage.getItem('unitime_tasks')) || [];
         let quickNotesText = localStorage.getItem('unitime_notes') || '';
 
@@ -491,10 +549,12 @@
         const quickNotes = document.getElementById('quickNotes');
         const themeToggle = document.getElementById('themeToggle');
 
-        // Theme Setup
         if (localStorage.getItem('unitime_theme') === 'dark' || !localStorage.getItem('unitime_theme')) {
             document.body.classList.add('dark-mode');
             themeToggle.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggle.textContent = '🌙';
         }
 
         themeToggle.addEventListener('click', () => {
@@ -504,7 +564,6 @@
             localStorage.setItem('unitime_theme', isDark ? 'dark' : 'light');
         });
 
-        // Tasks Logic
         function renderTasks() {
             tasksList.innerHTML = '';
             if (tasks.length === 0) {
@@ -581,13 +640,11 @@
             if (e.key === 'Enter') addTask();
         });
 
-        // Quick Notes Logic
         quickNotes.value = quickNotesText;
         quickNotes.addEventListener('input', () => {
             localStorage.setItem('unitime_notes', quickNotes.value);
         });
 
-        // Pomodoro Timer Logic
         let timerMinutes = 25;
         let timerSeconds = 0;
         let timerInterval = null;
