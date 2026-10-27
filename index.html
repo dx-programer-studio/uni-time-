@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظم الوقت اليومي - TaskFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+        }
+
+        .dark-mode {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .header-title p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .icon-btn:hover {
+            background: var(--border);
+        }
+
+        /* Main Content Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .content-section {
+            padding: 30px;
+            border-left: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .content-section {
+                border-left: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+
+        /* Progress Bar */
+        .progress-box {
+            background: var(--bg-gradient);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Task Input */
+        .task-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .task-input-group input, .task-input-group select {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .task-input-group input {
+            flex: 1;
+        }
+
+        .task-input-group select {
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Tasks List */
+        .tasks-container {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-left: 5px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .task-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-high { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge-medium { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge-low { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger);
+        }
+
+        /* Sidebar / Pomodoro & Notes */
+        .sidebar {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            background: rgba(0,0,0,0.01);
+        }
+
+        .pomodoro-card {
+            text-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .pomodoro-time {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .pomodoro-btns {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-sm.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Quick Notes */
+        .notes-card {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .notes-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .notes-card textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 120px;
+            resize: none;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 30px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h1>TaskFlow 🚀</h1>
+                <p>نظم وقتك، أنجز مهامك، وحقق أهدافك بسهولة</p>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle" title="تبديل الوضع الليلي">🌙</button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-grid">
+            <!-- Tasks Section -->
+            <div class="content-section">
+                <div class="progress-box">
+                    <div class="progress-info">
+                        <span>إنجاز اليوم</span>
+                        <span id="progressText">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <div class="task-input-group">
+                    <input type="text" id="taskInput" placeholder="أضف مهمة جديدة...">
+                    <select id="taskPriority">
+                        <option value="high">عالية</option>
+                        <option value="medium" selected>متوسطة</option>
+                        <option value="low">منخفضة</option>
+                    </select>
+                    <button class="btn-primary" id="addTaskBtn">إضافة</button>
+                </div>
+
+                <div class="tasks-container" id="tasksList">
+                    <!-- Tasks will be injected here -->
+                </div>
+            </div>
+
+            <!-- Sidebar Section (Pomodoro & Quick Notes) -->
+            <div class="sidebar">
+                <!-- Pomodoro Timer -->
+                <div class="pomodoro-card">
+                    <h3 id="timerLabel">وقت العمل 🍅</h3>
+                    <div class="pomodoro-time" id="timerDisplay">25:00</div>
+                    <div class="pomodoro-btns" style="margin-bottom: 12px;">
+                        <button class="btn-sm active" onclick="setTimer(25, 'وقت العمل 🍅', this)">عمل (25د)</button>
+                        <button class="btn-sm" onclick="setTimer(5, 'استراحة قصيرة ☕', this)">استراحة (5د)</button>
+                    </div>
+                    <div class="pomodoro-btns">
+                        <button class="btn-sm" id="startTimerBtn" onclick="toggleTimer()">تشغيل</button>
+                        <button class="btn-sm" onclick="resetTimer()">إعادة ضبط</button>
+                    </div>
+                </div>
+
+                <!-- Quick Notes -->
+                <div class="notes-card">
+                    <h3>ملاحظات سريعة 📝</h3>
+                    <textarea id="quickNotes" placeholder="اكتب ملاحظاتك هنا، تُحفظ تلقائياً..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management & LocalStorage ---
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let quickNotesText = localStorage.getItem('quickNotes') || '';
+
+        // DOM Elements
+        const taskInput = document.getElementById('taskInput');
+        const taskPriority = document.getElementById('taskPriority');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const tasksList = document.getElementById('tasksList');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const quickNotes = document.getElementById('quickNotes');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // --- Theme Toggle ---
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // --- Tasks Logic ---
+        function renderTasks() {
+            tasksList.innerHTML = '';
+            if (tasks.length === 0) {
+                tasksList.innerHTML = `<div class="empty-state">لا توجد مهام حالياً. أضف مهمة وابدأ إنجازك! ✨</div>`;
+                updateProgress();
+                return;
+            }
+
+            tasks.forEach((task, index) => {
+                const li = document.createElement('div');
+                li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                let badgeClass = 'badge-medium';
+                let badgeText = 'متوسطة';
+                if(task.priority === 'high') { badgeClass = 'badge-high'; badgeText = 'عالية'; }
+                if(task.priority === 'low') { badgeClass = 'badge-low'; badgeText = 'منخفضة'; }
+
+                li.innerHTML = `
+                    <div class="task-info">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
+                        <span>${escapeHtml(task.text)}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                        <button class="delete-btn" onclick="deleteTask(${index})">🗑️</button>
+                    </div>
+                `;
+                tasksList.appendChild(li);
+            });
+            updateProgress();
+            saveTasks();
+        }
+
+        function addTask() {
+            const text = taskInput.value.trim();
+            if (!text) return;
+            tasks.push({
+                text: text,
+                priority: taskPriority.value,
+                completed: false
+            });
+            taskInput.value = '';
+            renderTasks();
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function updateProgress() {
+            if (tasks.length === 0) {
+                progressBar.style.width = '0%';
+                progressText.textContent = '0%';
+                return;
+            }
+            const completedCount = tasks.filter(t => t.completed).length;
+            const percentage = Math.round((completedCount / tasks.length) * 100);
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = percentage + '%';
+        }
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        addTaskBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        // --- Quick Notes Logic ---
+        quickNotes.value = quickNotesText;
+        quickNotes.addEventListener('input', () => {
+            localStorage.setItem('quickNotes', quickNotes.value);
+        });
+
+        // --- Pomodoro Timer Logic ---
+        let timerMinutes = 25;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const timerLabel = document.getElementById('timerLabel');
+
+        function updateTimerDisplay() {
+            const m = String(timerMinutes).padStart(2, '0');
+            const s = String(timerSeconds).padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                startTimerBtn.textContent = 'تشغيل';
+                isRunning = false;
+            } else {
+                isRunning = true;
+                startTimerBtn.textContent = 'إيقاف مؤقت';
+                timerInterval = setInterval(() => {
+                    if (timerSeconds === 0) {
+                        if (timerMinutes === 0) {
+                            clearInterval(timerInterval);
+                            alert('انتهى الوقت! خذ استراحة أو عد للعمل ⏰');
+                            isRunning = false;
+                            startTimerBtn.textContent = 'تشغيل';
+                            return;
+                        }
+                        timerMinutes--;
+                        timerSeconds = 59;
+                    } else {
+                        timerSeconds--;
+                    }
+                    updateTimerDisplay();
+                }, 1000);
+            }
+        }
+
+        function setTimer(mins, labelText, btnElement) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            startTimerBtn.textContent = 'تشغيل';
+            timerMinutes = mins;
+            timerSeconds = 0;
+            timerLabel.textContent = labelText;
+            updateTimerDisplay();
+
+            document.querySelectorAll('.pomodoro-card .btn-sm').forEach(b => {
+                if(b.onclick && b.onclick.toString().includes('setTimer')) {
+                    b.classList.remove('active');
+                }
+            });
+            if(btnElement) btnElement.classList.add('active');
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            startTimerBtn.textContent = 'تشغيل';
+            timerMinutes = 25;
+            timerSeconds = 0;
+            timerLabel.textContent = 'وقت العمل 🍅';
+            updateTimerDisplay();
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Initial Render
+        renderTasks();
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
